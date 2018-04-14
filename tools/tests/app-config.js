@@ -143,7 +143,7 @@ selftest.define("testModule", function () {
     "test",
     // Not running with the --full-app option here, in order to exercise
     // the normal `meteor test` behavior.
-    "--driver-package", "meteortesting:mocha"
+    "TEST_BROWSER_DRIVER=chrome --driver-package", "meteortesting:mocha"
   );
 
   run.waitSecs(60);
