@@ -25,7 +25,7 @@ selftest.define("modules - test app", function () {
   s.cd("modules-test-app", function () {
     const run = s.run(
       "test", "--once", "--full-app",
-      "--driver-package", "dispatch:mocha-phantomjs"
+      "--driver-package", "meteortesting:mocha"
     );
 
     run.waitSecs(60);

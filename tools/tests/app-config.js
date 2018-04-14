@@ -9,7 +9,7 @@ selftest.define("mainModule", function () {
   const run = s.run(
     "test",
     "--full-app",
-    "--driver-package", "dispatch:mocha-phantomjs"
+    "--driver-package", "meteortesting:mocha"
   );
 
   run.waitSecs(60);
@@ -143,7 +143,7 @@ selftest.define("testModule", function () {
     "test",
     // Not running with the --full-app option here, in order to exercise
     // the normal `meteor test` behavior.
-    "--driver-package", "dispatch:mocha-phantomjs"
+    "--driver-package", "meteortesting:mocha"
   );
 
   run.waitSecs(60);
