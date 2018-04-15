@@ -4,10 +4,6 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  Npm.depends({
-    puppeteer: '1.3.0'
-  });
-
   api.use(['tinytest', 'underscore', 'random', 'ejson', 'check']);
   api.use('http', 'server');
 
