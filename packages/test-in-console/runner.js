@@ -22,7 +22,7 @@ async function runNextUrl() {
   const page = await browser.newPage();
 
   page.on('console', async msg => {
-    console.log(msg);
+    stdout(msg);
   });
 
   await page.goto(url);
