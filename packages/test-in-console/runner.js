@@ -18,15 +18,15 @@ async function runNextUrl() {
 
   console.log('Running Meteor tests in PhantomJS... ' + url);
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  stdout(await browser.version());
+  console.log(puppeteer);
 
-  page.on('console', async msg => {
-    stdout(msg);
-  });
+  var page = createPage();
 
-  await page.goto(url);
+  page.onConsoleMessage = function(message) {
+    console.log(message);
+  };
+
+  page.open(url);
 
   function poll() {
     if (isDone(page)) {
