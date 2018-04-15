@@ -6,6 +6,10 @@ selftest.define("mainModule", function () {
   s.createApp("app-config-mainModule", "app-config");
   s.cd("app-config-mainModule");
 
+  // For meteortesting:mocha to work we must set test broswer driver
+  // See https://github.com/meteortesting/meteor-mocha
+  s.set("TEST_BROWSER_DRIVER", "puppeteer");
+
   const run = s.run(
     "test",
     "--full-app",
@@ -143,7 +147,7 @@ selftest.define("testModule", function () {
     "test",
     // Not running with the --full-app option here, in order to exercise
     // the normal `meteor test` behavior.
-    "TEST_BROWSER_DRIVER=chrome --driver-package", "meteortesting:mocha"
+    "--driver-package", "meteortesting:mocha"
   );
 
   run.waitSecs(60);
