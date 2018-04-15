@@ -1,5 +1,6 @@
 const createPage = require('webpage').create;
 const system = require('system');
+const puppeteer = require('./dev_bundle/lib/node_modules/puppeteer');
 var platform = system.args[1] || 'local';
 var platformUrl = system.env.URL + platform;
 var testUrls = [
