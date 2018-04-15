@@ -20,6 +20,7 @@ async function runNextUrl() {
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  stdout(await browser.version());
 
   page.on('console', async msg => {
     stdout(msg);
