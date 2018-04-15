@@ -143,6 +143,10 @@ selftest.define("testModule", function () {
   s.createApp("app-config-mainModule", "app-config");
   s.cd("app-config-mainModule");
 
+  // For meteortesting:mocha to work we must set test broswer driver
+  // See https://github.com/meteortesting/meteor-mocha
+  s.set("TEST_BROWSER_DRIVER", "puppeteer");
+
   const run = s.run(
     "test",
     // Not running with the --full-app option here, in order to exercise
