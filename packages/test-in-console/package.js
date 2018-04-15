@@ -4,7 +4,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  ppm.depends({
+  npm.depends({
     puppeteer: '1.3.0'
   });
 
