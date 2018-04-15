@@ -16,7 +16,12 @@ function runNextUrl() {
     return;
   }
 
-  console.log(puppeteer);
+  async function runPuppeteer() {
+    const browser = await puppeteer.launch();
+    console.log(await browser.version());
+  }
+
+  runPuppeteer();
 
   console.log('Running Meteor tests in PhantomJS... ' + url);
 
