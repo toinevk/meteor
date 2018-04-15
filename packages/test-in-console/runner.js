@@ -9,7 +9,7 @@ var testUrls = [
   platformUrl
 ];
 
-async function runNextUrl() {
+function runNextUrl() {
   var url = testUrls.shift();
   if (!url) {
     phantom.exit(0);
