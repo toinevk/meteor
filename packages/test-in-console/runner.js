@@ -1,6 +1,5 @@
 var createPage = require('webpage').create;
 var system = require('system');
-var puppeteer = require('puppeteer');
 var platform = system.args[1] || 'local';
 var platformUrl = system.env.URL + platform;
 var testUrls = [
@@ -9,34 +8,30 @@ var testUrls = [
   platformUrl
 ];
 
-async function runNextUrl() {
+function runNextUrl() {
   var url = testUrls.shift();
   if (!url) {
-    await page.close();
+    phantom.exit(0);
     return;
   }
 
-  console.log('Running Meteor tests in Puppeteer ' + url);
+  console.log('Running Meteor tests in PhantomJS... ' + url);
 
-  // --no-sandbox and --disable-setuid-sandbox required for CI compability
-  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-  console.log(await browser.version());
-  const page = await browser.newPage();
+  var page = createPage();
 
-  page.on('console', msg => {
-    console.log(msg);
-  });
+  page.onConsoleMessage = function(message) {
+    console.log(message);
+  };
 
-  await page.goto(url);
+  page.open(url);
 
-  async function poll() {
+  function poll() {
     if (isDone(page)) {
       var failCount = getFailCount(page);
       if (failCount > 0) {
-        await page.close();
-        console.log('Complete with errors');
+        phantom.exit(1);
       } else {
-        await page.close();
+        page.close();
         setTimeout(runNextUrl, 1000);
       }
     } else {
