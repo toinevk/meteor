@@ -1,5 +1,6 @@
-var createPage = require('webpage').create;
-var system = require('system');
+const createPage = require('webpage').create;
+const puppeteer = require('puppeteer');
+const system = require('system');
 var platform = system.args[1] || 'local';
 var platformUrl = system.env.URL + platform;
 var testUrls = [
@@ -8,7 +9,7 @@ var testUrls = [
   platformUrl
 ];
 
-function runNextUrl() {
+async function runNextUrl() {
   var url = testUrls.shift();
   if (!url) {
     phantom.exit(0);
@@ -17,13 +18,14 @@ function runNextUrl() {
 
   console.log('Running Meteor tests in PhantomJS... ' + url);
 
-  var page = createPage();
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-  page.onConsoleMessage = function(message) {
-    console.log(message);
-  };
+  page.on('console', async msg => {
+    console.log(msg);
+  });
 
-  page.open(url);
+  await page.goto(url);
 
   function poll() {
     if (isDone(page)) {
