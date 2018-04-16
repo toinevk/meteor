@@ -5,7 +5,8 @@ cd ../..
 export METEOR_HOME=`pwd`
 
 # Just in case these packages haven't been installed elsewhere.
-./meteor npm install -g phantomjs-prebuilt browserstack-webdriver
+./meteor npm install -g puppeteer@1.3.0 phantomjs-prebuilt browserstack-webdriver
+
 
 export PATH=$METEOR_HOME:$PATH
 # synchronously get the dev bundle and NPM modules if they're not there.

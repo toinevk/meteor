@@ -15,9 +15,9 @@ function runNextUrl() {
     phantom.exit(0);
     return;
   }
- console.log(puppeteer);
-  
 
+  console.log(puppeteer);
+  
 
   console.log('Running Meteor tests in PhantomJS... ' + url);
 
