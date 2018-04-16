@@ -15,8 +15,15 @@ function runNextUrl() {
     phantom.exit(0);
     return;
   }
+  async function runPuppeteer() {
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    console.log(await browser.version());
+    const page = await browser.newPage();
+    await page.close();
+    await browser.close();
+  }
 
-  console.log(puppeteer);
+  runPuppeteer();
 
   console.log('Running Meteor tests in PhantomJS... ' + url);
 
