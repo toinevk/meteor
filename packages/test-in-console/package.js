@@ -3,6 +3,10 @@ Package.describe({
   version: '1.2.2'
 });
 
+Npm.depends({
+  'puppeteer': '1.3.0',
+});
+
 Package.onUse(function(api) {
   api.use(['tinytest', 'underscore', 'random', 'ejson', 'check']);
   api.use('http', 'server');

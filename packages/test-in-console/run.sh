@@ -5,7 +5,10 @@ cd ../..
 export METEOR_HOME=`pwd`
 
 # Just in case these packages haven't been installed elsewhere.
-./meteor npm install -g puppeteer@1.3.0 phantomjs-prebuilt browserstack-webdriver
+./meteor npm install -g phantomjs-prebuilt browserstack-webdriver
+
+# Install locally
+./meteor npm install puppeteer@1.3.0
 
 
 export PATH=$METEOR_HOME:$PATH
@@ -16,9 +19,7 @@ export URL='http://localhost:4096/'
 
 exec 3< <(meteor test-packages --driver-package test-in-console -p 4096 --exclude ${TEST_PACKAGES_EXCLUDE:-''})
 EXEC_PID=$!
-
-sed '/test-in-console listening$/q' <&3
-./dev_bundle/bin/phantomjs "$METEOR_HOME/packages/test-in-console/runner.js"
+exec 3< "$METEOR_HOME/packages/test-in-console/runner.js"
 STATUS=$?
 
 pkill -TERM -P $EXEC_PID
