@@ -1,5 +1,6 @@
 var createPage = require('webpage').create;
 var system = require('system');
+var puppeteer = require('puppeteer');
 var platform = system.args[1] || 'local';
 var platformUrl = system.env.URL + platform;
 var testUrls = [
@@ -16,7 +17,8 @@ function runNextUrl() {
   }  
 
   console.log('Running Meteor tests in Puppeteer... ' + url);
-
+  console.log(puppeteer);
+  
   var page = createPage();
 
   page.onConsoleMessage = function(message) {
