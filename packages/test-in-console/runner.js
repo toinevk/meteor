@@ -1,6 +1,5 @@
 var createPage = require('webpage').create;
 var system = require('system');
-var puppeteer = require('puppeteer');
 var platform = system.args[1] || 'local';
 var platformUrl = system.env.URL + platform;
 var testUrls = [
@@ -14,10 +13,7 @@ function runNextUrl() {
   if (!url) {
     phantom.exit(0);
     return;
-  }
-
-  console.log(puppeteer);
-  
+  }  
 
   console.log('Running Meteor tests in PhantomJS... ' + url);
 
