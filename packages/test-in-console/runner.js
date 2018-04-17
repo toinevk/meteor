@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-console.log(system.env.URL);
+console.log(process.env.URL);
 console.log("Running test with Puppeteer")
 
 async function runNextUrl() {
