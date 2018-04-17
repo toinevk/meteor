@@ -20,7 +20,7 @@ export URL='http://localhost:4096/'
 exec 3< <(meteor test-packages --driver-package test-in-console -p 4096 --exclude ${TEST_PACKAGES_EXCLUDE:-''})
 EXEC_PID=$!
 
-./dev_bundle/bin/phantomjs "$METEOR_HOME/packages/test-in-console/runner.js"
+exec 3<  "$METEOR_HOME/packages/test-in-console/runner.js"
 STATUS=$?
 
 pkill -TERM -P $EXEC_PID

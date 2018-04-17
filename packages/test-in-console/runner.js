@@ -15,7 +15,7 @@ function runNextUrl() {
     return;
   }  
 
-  console.log('Running Meteor tests in PhantomJS... ' + url);
+  console.log('Running Meteor tests in Puppeteer... ' + url);
 
   var page = createPage();
 
