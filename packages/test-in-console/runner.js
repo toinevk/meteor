@@ -1,5 +1,11 @@
 const puppeteer = require('puppeteer');
+const testUrls = [
+  // Additional application URLs can be added here to re-run tests in
+  // Puppeteer with different query parameter-based configurations.
+  system.env.URL,
+];
 
+console.log(system.env.URL);
 console.log("Running test with Puppeteer")
 
 async function runTests() {
@@ -8,23 +14,18 @@ async function runTests() {
   console.log(await browser.version());
   const page = await browser.newPage();
 
-  // console message args come in as handles, use this to evaluate them all
-  async function evaluateHandles (msg) {
-    return (await Promise.all(msg.args().map(arg => page.evaluate(h => h.toString(), arg))))
-      .join(' ');
-  }
-
   page.on('console', async (msg) => {
-    // this is racy but how else to do it?
-    const testsAreRunning = await page.evaluate('window.testsAreRunning');
-    if (msg.type() === 'error' && !testsAreRunning) {
-      stderr(await evaluateHandles(msg));
-    } else {
-      stdout(await evaluateHandles(msg));
-    }
+    console.log(message);
   });
 
-  await page.goto(process.env.ROOT_URL);
+  const url = testUrls.shift();
+  if (! url) {
+    await page.close();
+    await browser.close();
+    return;
+  }
+
+  await page.goto(url);
 }
 
 runTests();
