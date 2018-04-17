@@ -22,7 +22,7 @@ async function runNextUrl() {
 
   await page.goto(url);
 
-  function poll() {
+  async function poll() {
     if (isDone(page)) {
       let failCount = getFailCount(page);
       if (failCount > 0) {
