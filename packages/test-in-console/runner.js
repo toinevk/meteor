@@ -1,26 +1,19 @@
 const puppeteer = require('puppeteer');
 
-console.log(process.env.URL);
-console.log("Running test with Puppeteer")
-
-async function runNextUrl() {
-  // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
-  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-  console.log(`Using version: ${await browser.version()}`);
+async function runNextUrl(browser) {
   const page = await browser.newPage();
 
   page.on('console', (msg) => {
     console.log(msg);
   });
 
-  const url = "http://localhost:4096/"
-  if (! url) {
+  if (! process.env.ROOT_URL) {
     await page.close();
     await browser.close();
     return;
   }
 
-  await page.goto(url);
+  await page.goto(process.env.ROOT_URL);
 
   async function poll() {
     if (isDone(page)) {
@@ -64,4 +57,15 @@ function getFailCount(page) {
   });
 }
 
-runNextUrl();
+
+async function runTests() {
+  console.log(`Running test with Puppeteer at ${provess.env.URL}`)
+  console.log(`Using version: ${await browser.version()}`);
+
+   // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
+  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  runNextUrl(browser);
+}
+
+runTests();
+
