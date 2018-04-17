@@ -1,71 +1,30 @@
-var createPage = require('webpage').create;
-var system = require('system');
-var puppeteer = require('puppeteer');
-var platform = system.args[1] || 'local';
-var platformUrl = system.env.URL + platform;
-var testUrls = [
-  // Additional application URLs can be added here to re-run tests in
-  // PhantomJS with different query parameter-based configurations.
-  platformUrl
-];
+const puppeteer = require('puppeteer');
 
-function runNextUrl() {
-  var url = testUrls.shift();
-  if (!url) {
-    phantom.exit(0);
-    return;
-  }  
+console.log("Running test with Puppeteer")
 
-  console.log('Running Meteor tests in Puppeteer... ' + url);
-  console.log(puppeteer);
-  
-  var page = createPage();
+async function runTests() {
+  // --no-sandbox and --disable-setuid-sandbox allow this to easily run in docker
+  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  console.log(await browser.version());
+  const page = await browser.newPage();
 
-  page.onConsoleMessage = function(message) {
-    console.log(message);
-  };
-
-  page.open(url);
-
-  function poll() {
-    if (isDone(page)) {
-      var failCount = getFailCount(page);
-      if (failCount > 0) {
-        phantom.exit(1);
-      } else {
-        page.close();
-        setTimeout(runNextUrl, 1000);
-      }
-    } else {
-      setTimeout(poll, 1000);
-    }
+  // console message args come in as handles, use this to evaluate them all
+  async function evaluateHandles (msg) {
+    return (await Promise.all(msg.args().map(arg => page.evaluate(h => h.toString(), arg))))
+      .join(' ');
   }
 
-  poll();
-}
-
-function isDone(page) {
-  return page.evaluate(function() {
-    if (typeof TEST_STATUS !== 'undefined') {
-      return TEST_STATUS.DONE;
+  page.on('console', async (msg) => {
+    // this is racy but how else to do it?
+    const testsAreRunning = await page.evaluate('window.testsAreRunning');
+    if (msg.type() === 'error' && !testsAreRunning) {
+      stderr(await evaluateHandles(msg));
+    } else {
+      stdout(await evaluateHandles(msg));
     }
-
-    return typeof DONE !== 'undefined' && DONE;
   });
+
+  await page.goto(process.env.ROOT_URL);
 }
 
-function getFailCount(page) {
-  return page.evaluate(function() {
-    if (typeof TEST_STATUS !== 'undefined') {
-      return TEST_STATUS.FAILURES;
-    }
-
-    if (typeof FAILURES === 'undefined') {
-      return 1;
-    }
-
-    return 0;
-  });
-}
-
-runNextUrl();
+runTests();
