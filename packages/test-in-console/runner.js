@@ -11,6 +11,7 @@ async function runNextUrl(browser) {
   if (!process.env.URL) {
     await page.close();
     await browser.close();
+    process.exit(0);
     return;
   }
 
@@ -22,6 +23,7 @@ async function runNextUrl(browser) {
       if (failCount > 0) {
         await page.close();
         await browser.close();
+        process.exit(1);
       } else {
         await page.close();
         setTimeout(runNextUrl, 1000);
