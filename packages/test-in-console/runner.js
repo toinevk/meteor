@@ -4,7 +4,7 @@ async function runNextUrl(browser) {
   const page = await browser.newPage();
 
   page.on('console', (msg) => {
-    console.log(msg);
+    console.log(msg._text);
   });
 
   
@@ -15,18 +15,14 @@ async function runNextUrl(browser) {
   }
 
   await page.goto(process.env.URL);
-  console.log('im here2');
 
   async function poll() {
     if (await isDone(page)) {
-      console.log('im herePoll');
       let failCount = await getFailCount(page);
       if (failCount > 0) {
-        console.log('im closing');
         await page.close();
         await browser.close();
       } else {
-        console.log('im closing 2');
         await page.close();
         setTimeout(runNextUrl, 1000);
       }
@@ -39,7 +35,6 @@ async function runNextUrl(browser) {
 }
 
 async function isDone(page) {
-  console.log('im isDone');
   return await page.evaluate(function () {
     if (typeof TEST_STATUS !== "undefined") {
       return TEST_STATUS.DONE;
@@ -50,7 +45,6 @@ async function isDone(page) {
 }
 
 async function getFailCount(page) {
-  console.log('im getFail');
   return await page.evaluate(function () {
     if (typeof TEST_STATUS !== "undefined") {
       return TEST_STATUS.FAILURES;
