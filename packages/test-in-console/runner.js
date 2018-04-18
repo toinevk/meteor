@@ -37,9 +37,9 @@ async function runNextUrl(browser) {
   poll();
 }
 
-function isDone(page) {
+async function isDone(page) {
   console.log('im isDone');
-  return page.evaluate(function () {
+  return await page.evaluate(function () {
     if (typeof TEST_STATUS !== "undefined") {
       return TEST_STATUS.DONE;
     }
@@ -48,9 +48,9 @@ function isDone(page) {
   });
 }
 
-function getFailCount(page) {
+async function getFailCount(page) {
   console.log('im getFail');
-  return page.evaluate(function () {
+  return await page.evaluate(function () {
     if (typeof TEST_STATUS !== "undefined") {
       return TEST_STATUS.FAILURES;
     }
