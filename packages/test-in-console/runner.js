@@ -8,14 +8,14 @@ async function runNextUrl(browser) {
   });
 
   
-  if (!process.env.ROOT_URL) {
+  if (!process.env.URL) {
     console.log('im here');
     await page.close();
     await browser.close();
     return;
   }
 
-  await page.goto(process.env.ROOT_URL);
+  await page.goto(process.env.URL);
   console.log('im here2');
 
   async function poll() {
