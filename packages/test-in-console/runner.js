@@ -59,7 +59,7 @@ function getFailCount(page) {
 
 
 async function runTests() {
-  console.log(`Running test with Puppeteer at ${provess.env.URL}`)
+  console.log(`Running test with Puppeteer at ${process.env.URL}`)
   console.log(`Using version: ${await browser.version()}`);
 
    // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
