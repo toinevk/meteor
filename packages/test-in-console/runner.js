@@ -7,16 +7,20 @@ async function runNextUrl(browser) {
     console.log(msg);
   });
 
-  if (! process.env.ROOT_URL) {
+  
+  if (!process.env.ROOT_URL) {
+    console.log('im here');
     await page.close();
     await browser.close();
     return;
   }
 
   await page.goto(process.env.ROOT_URL);
+  console.log('im here2');
 
   async function poll() {
     if (isDone(page)) {
+      console.log('im herePoll');
       let failCount = getFailCount(page);
       if (failCount > 0) {
         await page.close();
@@ -34,6 +38,7 @@ async function runNextUrl(browser) {
 }
 
 function isDone(page) {
+  console.log('im isDone');
   return page.evaluate(function () {
     if (typeof TEST_STATUS !== "undefined") {
       return TEST_STATUS.DONE;
@@ -44,6 +49,7 @@ function isDone(page) {
 }
 
 function getFailCount(page) {
+  console.log('im getFail');
   return page.evaluate(function () {
     if (typeof TEST_STATUS !== "undefined") {
       return TEST_STATUS.FAILURES;
