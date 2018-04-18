@@ -60,10 +60,10 @@ function getFailCount(page) {
 
 async function runTests() {
   console.log(`Running test with Puppeteer at ${process.env.URL}`)
-  console.log(`Using version: ${await browser.version()}`);
 
    // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
   const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  console.log(`Using version: ${await browser.version()}`);
   runNextUrl(browser);
 }
 
