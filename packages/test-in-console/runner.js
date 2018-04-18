@@ -9,7 +9,6 @@ async function runNextUrl(browser) {
 
   
   if (!process.env.URL) {
-    console.log('im here');
     await page.close();
     await browser.close();
     return;
@@ -19,13 +18,15 @@ async function runNextUrl(browser) {
   console.log('im here2');
 
   async function poll() {
-    if (isDone(page)) {
+    if (await isDone(page)) {
       console.log('im herePoll');
-      let failCount = getFailCount(page);
+      let failCount = await getFailCount(page);
       if (failCount > 0) {
+        console.log('im closing');
         await page.close();
         await browser.close();
       } else {
+        console.log('im closing 2');
         await page.close();
         setTimeout(runNextUrl, 1000);
       }
