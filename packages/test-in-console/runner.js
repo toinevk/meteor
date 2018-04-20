@@ -2,12 +2,12 @@ const puppeteer = require('puppeteer');
 
 async function runNextUrl(browser) {
   const page = await browser.newPage();
+  await page.setBypassCSP(enabled);
 
-  page.on('console', (msg) => {
+  page.on('console', msg => {
     console.log(msg._text);
   });
 
-  
   if (!process.env.URL) {
     await page.close();
     await browser.close();
@@ -37,22 +37,22 @@ async function runNextUrl(browser) {
 }
 
 async function isDone(page) {
-  return await page.evaluate(function () {
-    if (typeof TEST_STATUS !== "undefined") {
+  return await page.evaluate(function() {
+    if (typeof TEST_STATUS !== 'undefined') {
       return TEST_STATUS.DONE;
     }
 
-    return typeof DONE !== "undefined" && DONE;
+    return typeof DONE !== 'undefined' && DONE;
   });
 }
 
 async function getFailCount(page) {
-  return await page.evaluate(function () {
-    if (typeof TEST_STATUS !== "undefined") {
+  return await page.evaluate(function() {
+    if (typeof TEST_STATUS !== 'undefined') {
       return TEST_STATUS.FAILURES;
     }
 
-    if (typeof FAILURES === "undefined") {
+    if (typeof FAILURES === 'undefined') {
       return 1;
     }
 
@@ -60,15 +60,13 @@ async function getFailCount(page) {
   });
 }
 
-
 async function runTests() {
-  console.log(`Running test with Puppeteer at ${process.env.URL}`)
+  console.log(`Running test with Puppeteer at ${process.env.URL}`);
 
-   // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
+  // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
   const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   console.log(`Using version: ${await browser.version()}`);
   runNextUrl(browser);
 }
 
 runTests();
-
