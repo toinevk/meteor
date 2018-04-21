@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 
 async function runNextUrl(browser) {
   const page = await browser.newPage();
-  await page.setBypassCSP(enabled);
+  await page.setBypassCSP(true);
 
   page.on('console', msg => {
     console.log(msg._text);
