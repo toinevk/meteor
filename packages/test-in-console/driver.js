@@ -18,20 +18,19 @@ var XML_CHAR_MAP = {
 };
 
 // Escapes a string for insertion into XML
-var escapeXml = function (s) {
-  return s.replace(/[<>&"']/g, function (c) {
+var escapeXml = function(s) {
+  return s.replace(/[<>&"']/g, function(c) {
     return XML_CHAR_MAP[c];
   });
-}
+};
 
 // Returns a human name for a test
-var getName = function (result) {
-  return (result.server ? "S: " : "C: ") +
-    result.groupPath.join(" - ") + " - " + result.test;
+var getName = function(result) {
+  return (result.server ? 'S: ' : 'C: ') + result.groupPath.join(' - ') + ' - ' + result.test;
 };
 
 // Calls console.log, but returns silently if console.log is not available
-var log = function (/*arguments*/) {
+var log = function(/*arguments*/) {
   if (typeof console !== 'undefined') {
     console.log.apply(console, arguments);
   }
@@ -41,13 +40,13 @@ var MAGIC_PREFIX = '##_meteor_magic##';
 // Write output so that other tools can read it
 // Output is sent to console.log, prefixed with the magic prefix and then the facility
 // By grepping for the prefix, other tools can get the 'special' output
-var logMagic = function (facility, s) {
+var logMagic = function(facility, s) {
   log(MAGIC_PREFIX + facility + ': ' + s);
 };
 
 // Logs xUnit output, if xunit output is enabled
 // This uses logMagic with a facility of xunit
-var xunit = function (s) {
+var xunit = function(s) {
   if (xunitEnabled) {
     logMagic('xunit', s);
   }
@@ -59,19 +58,15 @@ var expected = 0;
 var resultSet = {};
 var toReport = [];
 
-var hrefPath = window.location.href.split("/");
+var hrefPath = window.location.href.split('/');
 var platform = decodeURIComponent(hrefPath.length && hrefPath[hrefPath.length - 1]);
-if (!platform)
-  platform = "local";
+if (!platform) platform = 'local';
 
 // We enable xUnit output when platform is xunit
-var xunitEnabled = (platform == 'xunit');
+var xunitEnabled = platform == 'xunit';
 
-var doReport = Meteor &&
-      Meteor.settings &&
-      Meteor.settings.public &&
-      Meteor.settings.public.runId;
-var report = function (name, last) {
+var doReport = Meteor && Meteor.settings && Meteor.settings.public && Meteor.settings.public.runId;
+var report = function(name, last) {
   if (doReport) {
     var data = {
       run_id: Meteor.settings.public.runId,
@@ -81,42 +76,36 @@ var report = function (name, last) {
       server: resultSet[name].server,
       fullName: name.substr(3)
     };
-    if ((data.status === "FAIL" || data.status === "EXPECTED") &&
-        !_.isEmpty(resultSet[name].events)) {
+    if ((data.status === 'FAIL' || data.status === 'EXPECTED') && !_.isEmpty(resultSet[name].events)) {
       // only send events when bad things happen
       data.events = resultSet[name].events;
     }
-    if (last)
-      data.end = new Date();
-    else
-      data.start = new Date();
+    if (last) data.end = new Date();
+    else data.start = new Date();
     toReport.push(EJSON.toJSONValue(data));
   }
 };
-var sendReports = function (callback) {
+var sendReports = function(callback) {
   var reports = toReport;
-  if (!callback)
-    callback = function () {};
+  if (!callback) callback = function() {};
   toReport = [];
-  if (doReport)
-    Meteor.call("report", reports, callback);
-  else
-    callback();
+  if (doReport) Meteor.call('report', reports, callback);
+  else callback();
 };
 
-runTests = function () {
+runTests = function() {
   setTimeout(sendReports, 500);
   setInterval(sendReports, 2000);
 
   Tinytest._runTestsEverywhere(
-    function (results) {
+    function(results) {
       var name = getName(results);
       if (!_.has(resultSet, name)) {
         var testPath = EJSON.clone(results.groupPath);
         testPath.push(results.test);
         resultSet[name] = {
           name: name,
-          status: "PENDING",
+          status: 'PENDING',
           events: [],
           server: !!results.server,
           testPath: testPath,
@@ -126,66 +115,63 @@ runTests = function () {
       }
       // Loop through events, and record status for each test
       // Also log result if test has finished
-      _.each(results.events, function (event) {
+      _.each(results.events, function(event) {
         resultSet[name].events.push(event);
         switch (event.type) {
-        case "ok":
-          break;
-        case "expected_fail":
-          if (resultSet[name].status !== "FAIL")
-            resultSet[name].status = "EXPECTED";
-          break;
-        case "exception":
-          log(name, ":", "!!!!!!!!! FAIL !!!!!!!!!!!");
-          if (event.details && event.details.stack)
-            log(event.details.stack);
-          else
-            log("Test failed with exception");
-          failed++;
-          break;
-        case "finish":
-          switch (resultSet[name].status) {
-          case "OK":
+          case 'ok':
             break;
-          case "PENDING":
-            resultSet[name].status = "OK";
-            report(name, true);
-            log(name, ":", "OK");
-            passed++;
+          case 'expected_fail':
+            if (resultSet[name].status !== 'FAIL') resultSet[name].status = 'EXPECTED';
             break;
-          case "EXPECTED":
-            report(name, true);
-            log(name, ":", "EXPECTED FAILURE");
-            expected++;
-            break;
-          case "FAIL":
+          case 'exception':
+            log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!! - Exception');
+            if (event.details && event.details.stack) log(event);
+            else log('Test failed with exception');
             failed++;
-            report(name, true);
-            log(name, ":", "!!!!!!!!! FAIL !!!!!!!!!!!");
-            log(JSON.stringify(resultSet[name].info));
+            break;
+          case 'finish':
+            switch (resultSet[name].status) {
+              case 'OK':
+                break;
+              case 'PENDING':
+                resultSet[name].status = 'OK';
+                report(name, true);
+                log(name, ':', 'OK');
+                passed++;
+                break;
+              case 'EXPECTED':
+                report(name, true);
+                log(name, ':', 'EXPECTED FAILURE');
+                expected++;
+                break;
+              case 'FAIL':
+                failed++;
+                report(name, true);
+                log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!! -Fail');
+                log(JSON.stringify(resultSet[name].info));
+                break;
+              default:
+                log(name, ': unknown state for the test to be in');
+            }
             break;
           default:
-            log(name, ": unknown state for the test to be in");
-          }
-          break;
-        default:
-          resultSet[name].status = "FAIL";
-          resultSet[name].info = results;
-          break;
+            resultSet[name].status = 'FAIL';
+            resultSet[name].info = results;
+            break;
         }
       });
     },
 
     // After test completion, log a quick summary
-    function () {
+    function() {
       if (failed > 0) {
-        log("~~~~~~~ THERE ARE FAILURES ~~~~~~~");
+        log('~~~~~~~ THERE ARE FAILURES ~~~~~~~');
       }
-      log("passed/expected/failed/total", passed, "/", expected, "/", failed, "/", _.size(resultSet));
-      sendReports(function () {
+      log('passed/expected/failed/total', passed, '/', expected, '/', failed, '/', _.size(resultSet));
+      sendReports(function() {
         if (doReport) {
-          log("Waiting 3s for any last reports to get sent out");
-          setTimeout(function () {
+          log('Waiting 3s for any last reports to get sent out');
+          setTimeout(function() {
             TEST_STATUS.FAILURES = FAILURES = failed;
             TEST_STATUS.DONE = DONE = true;
           }, 3000);
@@ -197,30 +183,30 @@ runTests = function () {
 
       // Also log xUnit output
       xunit('<testsuite errors="" failures="" name="meteor" skips="" tests="" time="">');
-      _.each(resultSet, function (result, name) {
-        var classname = result.testPath.join('.').replace(/ /g, '-') + (result.server ? "-server" : "-client");
-        var name = result.test.replace(/ /g, '-') + (result.server ? "-server" : "-client");
-        var time = "";
-        var error = "";
-        _.each(result.events, function (event) {
+      _.each(resultSet, function(result, name) {
+        var classname = result.testPath.join('.').replace(/ /g, '-') + (result.server ? '-server' : '-client');
+        var name = result.test.replace(/ /g, '-') + (result.server ? '-server' : '-client');
+        var time = '';
+        var error = '';
+        _.each(result.events, function(event) {
           switch (event.type) {
-            case "finish":
+            case 'finish':
               var timeMs = event.timeMs;
               if (timeMs !== undefined) {
-                time = (timeMs / 1000) + "";
+                time = timeMs / 1000 + '';
               }
               break;
-            case "exception":
+            case 'exception':
               var details = event.details || {};
-              error = (details.message || '?') + " filename=" + (details.filename || '?') + " line=" + (details.line || '?');
+              error = (details.message || '?') + ' filename=' + (details.filename || '?') + ' line=' + (details.line || '?');
               break;
           }
         });
         switch (result.status) {
-          case "FAIL":
+          case 'FAIL':
             error = error || '?';
             break;
-          case "EXPECTED":
+          case 'EXPECTED':
             error = null;
             break;
         }
@@ -234,5 +220,6 @@ runTests = function () {
       xunit('</testsuite>');
       logMagic('state', 'done');
     },
-    ["tinytest"]);
-}
+    ['tinytest']
+  );
+};
