@@ -125,7 +125,7 @@ runTests = function() {
             break;
           case 'exception':
             log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!!');
-            if (event.details && event.details.stack) log(event);
+            if (event.details && event.details.stack) log(event.details.stack);
             else log('Test failed with exception');
             failed++;
             break;
@@ -148,7 +148,6 @@ runTests = function() {
                 failed++;
                 report(name, true);
                 log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!!');
-                log(resultSet[name]);
                 log(JSON.stringify(resultSet[name].info));
                 break;
               default:

@@ -1,13 +1,6 @@
 const puppeteer = require('puppeteer');
 
 async function runNextUrl(browser) {
-  const page = await browser.newPage();
-  await page.setBypassCSP(true);
-
-  page.on('console', msg => {
-    console.log(msg._text);
-  });
-
   if (!process.env.URL) {
     await page.close();
     await browser.close();
@@ -66,7 +59,13 @@ async function runTests() {
   // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
   const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   console.log(`Using version: ${await browser.version()}`);
-  runNextUrl(browser);
+  const page = await browser.newPage();
+
+  page.on('console', msg => {
+    console.log(msg._text);
+  });
+
+  runNextUrl(page);
 }
 
 runTests();

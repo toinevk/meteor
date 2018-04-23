@@ -8,7 +8,7 @@ export METEOR_HOME=`pwd`
 ./meteor npm install -g phantomjs-prebuilt browserstack-webdriver
 
 # Install locally
-./meteor npm install puppeteer@1.3.0
+./meteor npm install selenium-webdriver@4.0.0-alpha.1
 
 
 export PATH=$METEOR_HOME:$PATH
