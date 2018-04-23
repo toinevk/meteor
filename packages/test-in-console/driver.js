@@ -124,7 +124,7 @@ runTests = function() {
             if (resultSet[name].status !== 'FAIL') resultSet[name].status = 'EXPECTED';
             break;
           case 'exception':
-            log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!! - Exception');
+            log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!!');
             if (event.details && event.details.stack) log(event);
             else log('Test failed with exception');
             failed++;
@@ -147,7 +147,8 @@ runTests = function() {
               case 'FAIL':
                 failed++;
                 report(name, true);
-                log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!! -Fail');
+                log(name, ':', '!!!!!!!!! FAIL !!!!!!!!!!!');
+                log(resultSet[name]);
                 log(JSON.stringify(resultSet[name].info));
                 break;
               default:
