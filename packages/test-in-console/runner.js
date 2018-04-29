@@ -1,28 +1,81 @@
-const puppeteer = require('puppeteer');
+async function runTests() {
+  let page;
 
-async function runNextUrl(browser) {
-  if (!process.env.URL) {
-    await page.close();
-    await browser.close();
-    process.exit(0);
-    return;
+  if (process.env.phantom === true) {
+    console.log('im here');
+    const createPage = require('webpage').create;
+    const system = require('system');
+    const platform = system.args[1] || 'local';
+    const platformUrl = system.env.URL + platform;
+    const testUrls = [
+      // Additional application URLs can be added here to re-run tests in
+      // PhantomJS with different query parameter-based configurations.
+      platformUrl
+    ];
+
+    console.log('Running Meteor tests in PhantomJS... ' + url);
+
+    const page = createPage();
+
+    page.onConsoleMessage = function(message) {
+      console.log(message);
+    };
+
+    page.open(url);
+  } else {
+    const puppeteer = require('puppeteer');
+
+    console.log(`Running test with Puppeteer at ${process.env.URL}`);
+
+    // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    console.log(`Using version: ${await browser.version()}`);
+    const page = await browser.newPage();
+
+    page.on('console', msg => {
+      console.log(msg._text);
+    });
+
+    console.log('im here');
+
+    await page.goto(process.env.URL);
+    console.log('im failing');
   }
 
-  await page.goto(process.env.URL);
+  runNextUrl(page);
+}
+
+async function runNextUrl(page) {
+  if (!process.env.URL) {
+    // end process based on enviroment
+    if (process.env.phantom === true) {
+      phantom.exit(0);
+    } else {
+      await page.close();
+      process.exit(0);
+    }
+    return;
+  }
 
   async function poll() {
     if (await isDone(page)) {
       let failCount = await getFailCount(page);
       if (failCount > 0) {
-        await page.close();
-        await browser.close();
-        process.exit(1);
+        if (!process.env.URL) {
+          // end process based on enviroment
+          if (process.env.phantom === true) {
+            phantom.exit(1);
+          } else {
+            await page.close();
+            process.exit(1);
+          }
+        } else {
+          await page.close();
+          setTimeout(runNextUrl, 1000);
+        }
       } else {
-        await page.close();
-        setTimeout(runNextUrl, 1000);
+        setTimeout(poll, 1000);
       }
-    } else {
-      setTimeout(poll, 1000);
     }
   }
 
@@ -51,21 +104,6 @@ async function getFailCount(page) {
 
     return 0;
   });
-}
-
-async function runTests() {
-  console.log(`Running test with Puppeteer at ${process.env.URL}`);
-
-  // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
-  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-  console.log(`Using version: ${await browser.version()}`);
-  const page = await browser.newPage();
-
-  page.on('console', msg => {
-    console.log(msg._text);
-  });
-
-  runNextUrl(page);
 }
 
 runTests();
