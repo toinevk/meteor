@@ -15,7 +15,7 @@ async function runTests() {
 
     console.log('Running Meteor tests in PhantomJS... ' + url);
 
-    const page = createPage();
+    page = createPage();
 
     page.onConsoleMessage = function(message) {
       console.log(message);
@@ -30,16 +30,13 @@ async function runTests() {
     // --no-sandbox and --disable-setuid-sandbox must be disabled for CI compatibility
     const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     console.log(`Using version: ${await browser.version()}`);
-    const page = await browser.newPage();
+    page = await browser.newPage();
 
     page.on('console', msg => {
       console.log(msg._text);
     });
 
-    console.log('im here');
-
     await page.goto(process.env.URL);
-    console.log('im failing');
   }
 
   runNextUrl(page);
