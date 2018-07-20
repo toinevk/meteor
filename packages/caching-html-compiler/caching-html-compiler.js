@@ -53,25 +53,32 @@ CachingHtmlCompiler = class CachingHtmlCompiler extends CachingCompiler {
   compileOneFile(inputFile) {
     const contents = inputFile.getContentsAsString();
     const inputPath = inputFile.getPathInPackage();
-    try {
-      const tags = this.tagScannerFunc({
-        sourceName: inputPath,
-        contents: contents,
-        tagNames: ["body", "head", "template"]
-      });
+    const regex = new RegExp('^node_modules/');
+    const match = regex.test(inputPath);
 
-      return this.tagHandlerFunc(tags);
-    } catch (e) {
-      if (e instanceof CompileError) {
-        inputFile.error({
-          message: e.message,
-          line: e.line
+    // skip html files in node modules
+    if (!match) {
+      try {
+        const tags = this.tagScannerFunc({
+          sourceName: inputPath,
+          contents: contents,
+          tagNames: ["body", "head", "template"]
         });
-        return null;
-      } else {
-        throw e;
+  
+        return this.tagHandlerFunc(tags);
+      } catch (e) {
+        if (e instanceof CompileError) {
+          inputFile.error({
+            message: e.message,
+            line: e.line
+          });
+          return null;
+        } else {
+          throw e;
+        }
       }
     }
+    else return null;
   }
 
   // Implements method from CachingCompilerBase
