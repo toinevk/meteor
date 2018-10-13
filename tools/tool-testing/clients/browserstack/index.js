@@ -49,6 +49,7 @@ export default class BrowserStackClient extends Client {
 
   connect() {
     const key = BrowserStackClient._getBrowserStackKey();
+    console.log(key);
     if (!key) {
       throw new Error(
         'BrowserStack key not found. Ensure that s3cmd is setup with ' +
@@ -122,7 +123,11 @@ export default class BrowserStackClient extends Client {
 
       return (browserStackKey = readFile(outputDir, 'utf8').trim());
     } catch (e) {
-      // A failure is acceptable here; it was just a try.
+      // Throw an error so BrowserSTack does not silently fail.
+      throw new Error(
+        'BrowserStack key not found. Ensure that s3cmd is setup with ' +
+          'S3 credentials, or set BROWSERSTACK_ACCESS_KEY in your environment.'
+      );
     }
 
     return (browserStackKey = null);
